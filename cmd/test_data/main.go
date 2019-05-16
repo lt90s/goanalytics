@@ -2,27 +2,36 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
+	"github.com/lt90s/goanalytics/api/authentication"
 	"github.com/lt90s/goanalytics/conf"
 	"github.com/lt90s/goanalytics/metric/user"
 	"github.com/lt90s/goanalytics/storage"
 	"github.com/lt90s/goanalytics/storage/mongodb"
 	"github.com/lt90s/goanalytics/utils"
 	"math/rand"
+	"os"
 	"strconv"
 )
 
-const (
-	// TODO: make it command line argument
-	appId = "5cdc1c190419102151e407d5"
-)
 
 var (
 	end      = utils.TodayTimestamp()
 	start    = end - 30*24*60*60
 	channels = []string{"huawei", "xiaomi", "appStore", "google"}
 	versions = []string{"1.0.0", "1.2.0", "2.0.0"}
+	appId string
 )
+
+func init() {
+	flag.StringVar(&appId, "appId", "", "appId")
+	flag.Usage = usage
+}
+
+func usage() {
+	_, _ = fmt.Fprintf(os.Stderr, "%s -appId appId\n", os.Args[0])
+}
 
 func setSlotCounterPercent(counter storage.Counter, name string, slots []string) {
 	tmpStart := start
@@ -91,11 +100,33 @@ func setSimpleCounter(counter storage.Counter, name string) {
 }
 
 func main() {
-	fmt.Println(start, end)
+	flag.Parse()
+
+	if appId == "" {
+		flag.Usage()
+		return
+	}
 	client := mongodb.DefaultClient
 	prefix := conf.GetConfString(conf.MongoDatabasePrefixKey)
+	adminDatabase := conf.GetConfString(conf.MongoDatabaseAdminKey)
 
 	client.Database(prefix + appId).Drop(context.Background())
+
+	adminStore := authentication.NewMongoStore(client, adminDatabase)
+	appIds := adminStore.GetAppIds()
+
+	found := false
+	for _, id := range appIds {
+		if id == appId {
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		_, _ = fmt.Fprintf(os.Stderr, "appId invalid, available appIds are: %v\n", appIds)
+		return
+	}
 
 	counter := mongodb.NewCounter(client, prefix)
 
