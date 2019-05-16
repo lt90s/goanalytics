@@ -1,6 +1,6 @@
 <h1 align="center"> GoAnalytics </h1>
 
-### 项目介绍
+### 项目介绍
 
 GoAnalytics是基于go实现的一个数据统计平台，用于统计移动端的数据指标，比如启动次数、用户增长、活跃用户、留存等指标分析。
 前端数据展示项目是 [goanalytics-web](https://github.com/lt90s/goanalytics-web)。
@@ -13,6 +13,7 @@ GoAnalytics是基于go实现的一个数据统计平台，用于统计移动端�
 * 数据实时分析展示
 * 用户相关基本指标：增长、留存、活跃、启动等
 * 渠道、平台、版本交叉对比
+* 自定义事件统计
 * 轻量
 
 ### 构建
