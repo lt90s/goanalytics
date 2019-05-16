@@ -34,3 +34,14 @@ require (
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
 )
+
+replace (
+	golang.org/x/crypto => github.com/golang/crypto v0.0.0-20190513172903-22d7a77e9e5f
+	golang.org/x/crypto v0.0.0-20190506204251-e1dfcc566284 => github.com/golang/crypto v0.0.0-20190506204251-e1dfcc566284
+	golang.org/x/net => github.com/golang/net v0.0.0-20190514140710-3ec191127204
+	golang.org/x/sync v0.0.0-20190423024810-112230192c58 => github.com/golang/sync v0.0.0-20190423024810-112230192c58
+	golang.org/x/sys => github.com/golang/sys v0.0.0-20190516014833-cab07311ab81
+	golang.org/x/text => github.com/golang/text v0.3.2
+	golang.org/x/text v0.3.2 => github.com/golang/text v0.3.2
+	golang.org/x/tools => github.com/golang/tools v0.0.0-20190516015132-d1a3278ee749
+)
