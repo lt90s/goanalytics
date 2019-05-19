@@ -2,6 +2,7 @@ package schedule
 
 import (
 	"github.com/lt90s/goanalytics/event/pubsub"
+	"github.com/lt90s/goanalytics/metric/usage"
 	"github.com/lt90s/goanalytics/metric/user"
 	"github.com/lt90s/goanalytics/utils"
 	"github.com/whiteshtef/clockwork"
@@ -25,6 +26,14 @@ func RunScheduler(getter AppIdsGetter, publisher pubsub.Publisher) {
 		}
 		schedule.Schedule().Every().Day().At("1:00").Do(func() {
 			publisher.Publish(user.DailyScheduleEvent, &userDailyData)
+		})
+
+		usageDailyData := usage.DailyScheduleEventData{
+			AppId:     appId,
+			Timestamp: yesterdayTimestamp,
+		}
+		schedule.Schedule().Every().Day().At("1:00").Do(func() {
+			publisher.Publish(usage.DailyScheduleEvent, &usageDailyData)
 		})
 	}
 
