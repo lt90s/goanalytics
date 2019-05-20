@@ -12,7 +12,7 @@ const (
 	EachUsageTimeDistributionSlotCounter  = "EachUsageTimeDistributionSlotCounter"
 	EachUsageAverageTimeSimpleCounter     = "EachUsageAverageTimeSimpleCounter"
 	DailyUsageTimeDistributionSlotCounter = "DailyUsageTimeDistributionSlotCounter"
-	DailyUsageAverageTimeSimpleCountet    = "DailyUsageAverageTimeSimpleCountet"
+	DailyUsageAverageTimeSimpleCounter    = "DailyUsageAverageTimeSimpleCounter"
 )
 
 const (
