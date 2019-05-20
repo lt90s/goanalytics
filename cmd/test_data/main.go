@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/lt90s/goanalytics/api/authentication"
 	"github.com/lt90s/goanalytics/conf"
+	usage2 "github.com/lt90s/goanalytics/metric/usage"
 	"github.com/lt90s/goanalytics/metric/user"
 	"github.com/lt90s/goanalytics/storage"
 	"github.com/lt90s/goanalytics/storage/mongodb"
@@ -176,4 +177,18 @@ func main() {
 	}
 	counter.AddCustomizedCounter(appId, data)
 	setCPVCounter(counter, data.Name + storage.CustomizedCounterNameSuffix, 10, 100)
+
+	setUsageMetric(counter)
+}
+
+
+func setUsageMetric(counter storage.Counter) {
+	slots := make([]string, 0)
+	for key := range usage2.TimeDistributionSlotsMapping {
+		slots = append(slots, key)
+	}
+	setSimpleCounter(counter, usage2.EachUsageAverageTimeSimpleCounter)
+	setSlotCounter(counter, usage2.EachUsageTimeDistributionSlotCounter, slots, 1, 1000)
+	setSimpleCounter(counter, usage2.DailyUsageAverageTimeSimpleCounter)
+	setSlotCounter(counter, usage2.DailyUsageTimeDistributionSlotCounter, slots, 1, 3600)
 }
