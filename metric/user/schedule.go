@@ -47,7 +47,7 @@ func calcDailyActiveNewUserPercent(data *DailyScheduleEventData, store Store) {
 		return
 	}
 	percent := calculatePercent(newUserCount, dailyActiveCount)
-	store.AddSimpleCounter(appId, DailyActiveNewUserPercentSimpleCounter, data.Timestamp, percent)
+	store.SetSimpleCounter(appId, DailyActiveNewUserPercentSimpleCounter, data.Timestamp, percent)
 }
 
 func calcDailyActiveUserAffinity(data *DailyScheduleEventData, store Store) {
@@ -64,9 +64,9 @@ func calcDailyActiveUserAffinity(data *DailyScheduleEventData, store Store) {
 	p2 := calculatePercent(dailyActiveCount, float64(faus))
 	p3 := calculatePercent(dailyActiveCount, float64(taus))
 
-	store.AddSlotCounter(data.AppId, DailyActiveUserAffinitySlotCounter, "7", timestamp, p1)
-	store.AddSlotCounter(data.AppId, DailyActiveUserAffinitySlotCounter, "15", timestamp, p2)
-	store.AddSlotCounter(data.AppId, DailyActiveUserAffinitySlotCounter, "30", timestamp, p3)
+	store.SetSlotCounter(data.AppId, DailyActiveUserAffinitySlotCounter, "7", timestamp, p1)
+	store.SetSlotCounter(data.AppId, DailyActiveUserAffinitySlotCounter, "15", timestamp, p2)
+	store.SetSlotCounter(data.AppId, DailyActiveUserAffinitySlotCounter, "30", timestamp, p3)
 }
 
 func calcOpenAppCountDistribution(data *DailyScheduleEventData, store Store) {

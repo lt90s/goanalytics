@@ -23,7 +23,6 @@ type Store interface {
 	calculateDailyUsageTimeDistribution(appId string, date int64) error
 }
 
-
 type mongodbStore struct {
 	storage.Counter
 	client         *mongo.Client
@@ -49,7 +48,7 @@ func (ms *mongodbStore) deviceUsageTimeCollection(appId string) *mongo.Collectio
 func (ms *mongodbStore) addDeviceUsageTime(data *usageTimeData) error {
 	ctx := context.Background()
 	filter := bson.M{
-		"date": data.MetaData.DateTimestamp,
+		"date":     data.MetaData.DateTimestamp,
 		"deviceId": data.MetaData.DeviceId,
 	}
 	update := bson.M{
@@ -130,9 +129,9 @@ func (ms *mongodbStore) calculateDailyUsageTimeDistribution(appId string, date i
 			return err
 		}
 		slot := timeDistribution2Slot(tmp.Time)
-		err = ms.AddSlotCounter(appId, DailyUsageTimeDistributionSlotCounter, slot, date, 1.0)
+		err = ms.SetSlotCounter(appId, DailyUsageTimeDistributionSlotCounter, slot, date, 1.0)
 		if err != nil {
-			entry.Warnf("AddSlotCounter error: slot=%v error=%v", slot, err.Error())
+			entry.Warnf("SetSlotCounter error: slot=%v error=%v", slot, err.Error())
 		}
 	}
 	return nil

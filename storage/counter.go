@@ -35,14 +35,17 @@ func (ce CustomizedCounter) Valid() bool {
 
 type Counter interface {
 	AddSimpleCounter(appId string, counterName string, dateTimestamp int64, amount float64) error
+	SetSimpleCounter(appId string, counterName string, dateTimestamp int64, amount float64) error
 	GetSimpleCounterSpan(appId string, counterName string, startTimestam, endTimestamp int64) (map[int64]float64, error)
 	GetSimpleCounterSum(appId string, counterName string, startTimestam, endTimestamp int64) (float64, error)
 
 	AddSlotCounter(appId string, counterName, slotName string, dateTimestamp int64, amount float64) error
+	SetSlotCounter(appId string, counterName, slotName string, dateTimestamp int64, amount float64) error
 	GetSlotCounterSpan(appId string, target string, start, end int64) (slotCounters SlotCounters, err error)
 	GetSlotCounterSum(appId string, target string, start, end int64, slots []string) (sums map[string]float64, err error)
 
 	AddSimpleCPVCounter(appId string, channel, platform, version, counterName string, dateTimestamp int64, amount float64) error
+	SetSimpleCPVCounter(appId string, channel, platform, version, counterName string, dateTimestamp int64, amount float64) error
 	GetSimpleCPVSumTotal(appId, counterName string, start, end int64) (float64, error)
 	GetSimpleCPVSumDate(appId, counterName string, start, end int64) (map[int64]float64, error)
 	GetSimpleCPVDateCPV(appId, counterName string, start, end int64) (map[string]map[int64]map[string]float64, error)

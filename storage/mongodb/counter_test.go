@@ -59,6 +59,26 @@ func TestCounter_AddSimpleCounter_GetSimpleCounterSpan(t *testing.T) {
 	require.Equal(t, 7.6, count)
 }
 
+func TestCounter_SetSimpleCounter_GetSimpleCounterSpan(t *testing.T) {
+	mongoCounter := NewCounter(newMongoClient(), "goanalytics").(*counter)
+	defer mongoCounter.database(appId).Drop(context.Background())
+
+	timestamp := utils.TodayTimestamp()
+	err := mongoCounter.SetSimpleCounter(appId, "foo", timestamp, 2.4)
+	require.NoError(t, err)
+
+	err = mongoCounter.SetSimpleCounter(appId, "foo", timestamp, 5.2)
+	require.NoError(t, err)
+
+	span, err := mongoCounter.GetSimpleCounterSpan(appId, "foo", timestamp, timestamp)
+	require.NoError(t, err)
+	require.Equal(t, 1, len(span))
+
+	count, ok := span[timestamp]
+	require.True(t, ok)
+	require.Equal(t, 5.2, count)
+}
+
 func TestCounter_GetSimpleCounterSum(t *testing.T) {
 	mongoCounter := NewCounter(newMongoClient(), "goanalytics").(*counter)
 	defer mongoCounter.database(appId).Drop(context.Background())
@@ -142,6 +162,38 @@ func TestCounter_GetSlotCounterSum(t *testing.T) {
 	require.Equal(t, 2.4*7, bazSum)
 }
 
+func TestCounter_SetSlotCounter_GetSlotCounterSpan(t *testing.T) {
+	mongoCounter := NewCounter(newMongoClient(), "goanalytics").(*counter)
+	defer mongoCounter.database(appId).Drop(context.Background())
+
+	err := mongoCounter.SetSlotCounter(appId, "foo", "bar", utils.TodayTimestamp(), 1)
+	require.NoError(t, err)
+
+	err = mongoCounter.SetSlotCounter(appId, "foo", "bar", utils.TodayTimestamp(), 1)
+	require.NoError(t, err)
+
+	err = mongoCounter.SetSlotCounter(appId, "foo", "baz", utils.TodayTimestamp(), 2.4)
+	require.NoError(t, err)
+
+	err = mongoCounter.SetSlotCounter(appId, "foo", "baz", utils.TodayTimestamp(), 2.4)
+	require.NoError(t, err)
+
+	span, err := mongoCounter.GetSlotCounterSpan(appId, "foo", utils.TodayTimestamp(), utils.TodayTimestamp())
+	require.NoError(t, err)
+	require.Len(t, span, 1)
+
+	slotCounter, ok := span[utils.TodayTimestamp()]
+	require.True(t, ok)
+
+	bar, ok := slotCounter["bar"]
+	require.True(t, ok)
+	require.Equal(t, 1.0, bar)
+
+	baz, ok := slotCounter["baz"]
+	require.True(t, ok)
+	require.Equal(t, 2.4, baz)
+}
+
 func TestCounter_GetSimpleCPVSumTotal(t *testing.T) {
 	mongoCounter := NewCounter(newMongoClient(), "goanalytics").(*counter)
 	defer mongoCounter.database(appId).Drop(context.Background())
@@ -178,4 +230,19 @@ func TestCounter_GetSimpleCPVSumDate(t *testing.T) {
 	sum, ok = sums[utils.TodayTimestamp()]
 	require.True(t, ok)
 	require.Equal(t, 10.0, sum)
+}
+
+func TestCounter_SetSimpleCPVCounter(t *testing.T) {
+	mongoCounter := NewCounter(newMongoClient(), "goanalytics").(*counter)
+	defer mongoCounter.database(appId).Drop(context.Background())
+
+	err := mongoCounter.SetSimpleCPVCounter(appId, "c0", "p0", "v0", "cpv", utils.TodayTimestamp(), 1.0)
+	require.NoError(t, err)
+
+	err = mongoCounter.SetSimpleCPVCounter(appId, "c0", "p0", "v0", "cpv", utils.TodayTimestamp(), 2.0)
+	require.NoError(t, err)
+
+	sum, err := mongoCounter.GetSimpleCPVSumTotal(appId, "cpv", utils.TodayTimestamp(), utils.TodayTimestamp())
+	require.NoError(t, err)
+	require.Equal(t, 2.0, sum)
 }

@@ -54,6 +54,10 @@ func (c *counter) AddSimpleCounter(appId string, counterName string, dateTimesta
 	return c.AddSlotCounter(appId, counterName, simpleCounterSlotName, dateTimestamp, amount)
 }
 
+func (c *counter) SetSimpleCounter(appId string, counterName string, dateTimestamp int64, amount float64) error {
+	return c.SetSlotCounter(appId, counterName, simpleCounterSlotName, dateTimestamp, amount)
+}
+
 func (c *counter) GetSimpleCounterSpan(appId string, counterName string, startTimestamp, endTimestamp int64) (map[int64]float64, error) {
 	slotCounters, err := c.GetSlotCounterSpan(appId, counterName, startTimestamp, endTimestamp)
 	if err != nil {
@@ -79,6 +83,18 @@ func (c *counter) AddSlotCounter(appId string, counterName, slotName string, dat
 	ctx := context.Background()
 	filter := bson.M{"date": dateTimestamp}
 	update := bson.M{"$inc": bson.M{"counter." + slotName: amount}}
+	upsert := true
+	option := &options.UpdateOptions{
+		Upsert: &upsert,
+	}
+	_, err := c.slotCounterCollection(appId, counterName).UpdateOne(ctx, filter, update, option)
+	return err
+}
+
+func (c *counter) SetSlotCounter(appId string, counterName, slotName string, dateTimestamp int64, amount float64) error {
+	ctx := context.Background()
+	filter := bson.M{"date": dateTimestamp}
+	update := bson.M{"$set": bson.M{"counter." + slotName: amount}}
 	upsert := true
 	option := &options.UpdateOptions{
 		Upsert: &upsert,
@@ -212,6 +228,25 @@ func (c *counter) AddSimpleCPVCounter(appId string, channel, platform, version, 
 	}
 	update := bson.M{
 		"$inc": bson.M{"counter": amount},
+	}
+	upsert := true
+	option := &options.UpdateOptions{
+		Upsert: &upsert,
+	}
+	_, err := c.simpleCPVCounterCollection(appId, counterName).UpdateOne(ctx, filter, update, option)
+	return err
+}
+
+func (c *counter) SetSimpleCPVCounter(appId string, channel, platform, version, counterName string, dateTimestamp int64, amount float64) error {
+	ctx := context.Background()
+	filter := bson.M{
+		"date":     dateTimestamp,
+		"channel":  channel,
+		"platform": platform,
+		"version":  version,
+	}
+	update := bson.M{
+		"$set": bson.M{"counter": amount},
 	}
 	upsert := true
 	option := &options.UpdateOptions{

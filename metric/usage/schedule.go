@@ -51,7 +51,7 @@ func calculateEachUsageAverageTime(data *DailyScheduleEventData, store Store) er
 	if totalCount == 0 {
 		return nil
 	}
-	return store.AddSimpleCounter(data.AppId, EachUsageAverageTimeSimpleCounter, data.Timestamp, totalTime/totalCount)
+	return store.SetSimpleCounter(data.AppId, EachUsageAverageTimeSimpleCounter, data.Timestamp, totalTime/totalCount)
 }
 
 func calculateDailyUsageAverageTime(data *DailyScheduleEventData, store Store) error {
@@ -69,7 +69,7 @@ func calculateDailyUsageAverageTime(data *DailyScheduleEventData, store Store) e
 		return nil
 	}
 
-	return store.AddSimpleCounter(data.AppId, DailyUsageAverageTimeSimpleCounter, data.Timestamp, totalTime/float64(totalCount))
+	return store.SetSimpleCounter(data.AppId, DailyUsageAverageTimeSimpleCounter, data.Timestamp, totalTime/float64(totalCount))
 }
 
 func calculateDailyUsageTimeDistribution(data *DailyScheduleEventData, store Store) error {

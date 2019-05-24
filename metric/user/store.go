@@ -302,7 +302,7 @@ func (ms *mongodbStore) calcOpenAppCountDistribution(appId string, timestamp int
 		} else {
 			slot = "50+"
 		}
-		ms.AddSlotCounter(appId, OpenAppCountDistributionSlotCounter, slot, timestamp, 1.0)
+		ms.SetSlotCounter(appId, OpenAppCountDistributionSlotCounter, slot, timestamp, 1.0)
 	}
 	return nil
 }
